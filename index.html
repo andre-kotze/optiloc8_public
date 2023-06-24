@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="us-ascii">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+	<link href="../img/favicon.ico" rel="icon" />
+	<title>Optiloc8</title>
+	<link href="index.css?version=1" rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
+</head>
+<body style="margin:0px;padding:0px;overflow:hidden;height:100vh">
+  <style>
+    iframe.bgvideo {
+    width: 100%;
+    height: 110%;
+    }
+    .overlay {
+      position: relative;
+      height: 100%;
+    }
+
+    .bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 40px;
+    }
+</style> 
+<div class="overlay">
+  <div style="height:100%">
+    <iframe id="bgiframe" class="bgvideo" src="https://earth.nullschool.net/#current/wind/isobaric/850hPa/orthographic=14.36,49.62,1754" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe> 
+  </div>
+
+
+
+  <div class="bar" style="margin-left: 20%; margin-top: 20%">
+  <a href="#">
+    <img style="width:40%;padding: 20px; border: 0.15em solid white; border-radius: 2em;" src="img/logo_v1.png"/>
+  </a>
+  </div>
+</div>
+
+</body>
+<script>$('#bgiframe').contents().find(".earth-bar").removeClass(".earth-bar");</script>
