@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="us-ascii">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="../../img/favicon.ico" rel="icon" />
+	<title>Optiloc8</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
+   
+   <script language="javascript">
+      function init() {
+      	 var map = L.map('map').setView([51.028, 10.334], 5);
+      	 
+      	 //CartoDB layer names: light_all / dark_all / light_nonames / dark_nonames
+      	 var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+         });
+      	 
+         layer.addTo(map);
+         map.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text. Attribution overload
+      }
+   </script>
+   
+</head>
+
+<body style="height:100vh;margin:0;" onLoad="javascript:init();">
+    <div class="container" style="height:100%"">
+        <div id="map" style="height:100%"></div>
+    </div>
+   
+   
+</body>                                                                                                                          
+</html>
