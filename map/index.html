@@ -4,6 +4,7 @@
   <meta charset="us-ascii">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link href="../../img/favicon.ico" rel="icon" />
+  <link href="default.css?version=1" rel="stylesheet" />
 	<title>Optiloc8</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
@@ -19,15 +20,17 @@
          });
       	 
          layer.addTo(map);
-         map.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text. Attribution overload
       }
    </script>
-   
+
 </head>
 
-<body style="height:100vh;margin:0;" onLoad="javascript:init();">
+<body onLoad="javascript:init();">
+  <div id="header">
+    <span><img src="../img/logo_v2.png" style="height: 80px;"></span>
+  </div>
     <div class="container" style="height:100%"">
-        <div id="map" style="height:100%"></div>
+        <div id="map" style="height:100%;background: #090909;"></div>
     </div>
    
    
