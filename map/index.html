@@ -9,30 +9,77 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
-   
-   <script language="javascript">
-      function init() {
-      	 var map = L.map('map').setView([51.028, 10.334], 5);
-      	 
-      	 //CartoDB layer names: light_all / dark_all / light_nonames / dark_nonames
-      	 var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-         });
-      	 
-         layer.addTo(map);
-      }
-   </script>
-
 </head>
 
-<body onLoad="javascript:init();">
-  <div id="header">
+<body>
+  
+  <div id="header" hidden>
     <span><img src="../img/logo_v2.png" style="height: 80px;"></span>
   </div>
-    <div class="container" style="height:100%"">
+    <div class="container" style="height:100%">
         <div id="map" style="height:100%;background: #090909;"></div>
     </div>
+    <div id="logoContainer"><img src="../../img/logo_v2.png" style="width:100%"></div>
    
    
-</body>                                                                                                                          
+</body>     
+<script language="javascript">
+     var map = L.map('map').setView([51.028, 10.334], 5);
+     var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+     });
+     
+     layer.addTo(map);
+
+     var mapControlsContainer = document.getElementsByClassName("leaflet-control")[0];
+ var logoContainer = document.getElementById("logoContainer");
+   mapControlsContainer.appendChild(logoContainer);
+
+   dragElement(document.getElementById("logoContainer"));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById("logoContainer")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById("logoContainer").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    map.dragging.disable();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+    map.dragging.enable();
+    
+  }
+}
+</script>                                                                                                                     
 </html>
