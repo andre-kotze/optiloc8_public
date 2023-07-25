@@ -111,8 +111,12 @@
     });
 
     // Add Data
-    function addGeoJSONFlaechen(data, label) {
-        var geoJSONLayer = L.geoJSON(data, {
+    async function addGeoJSONFlaechen(data, n) {
+        console.log("adding "+ data.slice(12,14))
+        var response = await fetch(data)
+        var GeoJson = await response.json()
+        //var lyrLbl = label + " Potenzial"
+        var geoJSONLayer = L.geoJSON(GeoJson, {
             style: {
                 fillColor: '#02cba7',
                 weight: 1,
@@ -123,11 +127,9 @@
             //onEachFeature: function(feature, layer) {
             //    layer.bindPopup("DN: " + feature.properties.DN);
             //}
+        
         });
-        var lyrLbl = label + " Potenzial"
-        // Add the GeoJSON layer to the map
-        //geoJSONLayer.addTo(map);
-        layerControl.addOverlay(geoJSONLayer, lyrLbl)
+        return geoJSONLayer;
     }
 
     const datasets = [
@@ -148,12 +150,20 @@
         '../data/RLI/ST.geojson',
         '../data/RLI/TH.geojson'
     ];
-    for (var dataset in datasets) {
-        fetch(datasets[dataset])
-            .then(response => response.json())
-            .then(data => addGeoJSONFlaechen(data, datasets[dataset].slice(12,14)))
-            .catch(error => console.error('Error loading GeoJSON data:', error));
+    async function loadPotenzialflaechen(urls) {
+        for (var dataset in datasets) {
+            console.log("start loading "+dataset)
+            var flaechenLyr = await addGeoJSONFlaechen(datasets[dataset],dataset)
+            
+            // Add the GeoJSON layer to the map
+            //geoJSONLayer.addTo(map);
+            layerControl.addOverlay(flaechenLyr, datasets[dataset].slice(12,14) + " Potenzial")
+            console.log("finished fetch "+dataset)
+            //    .catch(error => console.error('Error loading GeoJSON data:', error));
+        }
     }
+
+    loadPotenzialflaechen(datasets)
 
     function addGeoJSONGrenzen(data) {
         var grenzLayer = L.geoJSON(data, {
