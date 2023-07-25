@@ -1,85 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="us-ascii">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href="../../img/favicon.ico" rel="icon" />
-  <link href="default.css?version=1" rel="stylesheet" />
-	<title>Optiloc8</title>
+    <meta charset="us-ascii">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="../../img/favicon.ico" rel="icon" />
+    <link href="default.css?version=1" rel="stylesheet" />
+    <title>Optiloc8</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 </head>
 
 <body>
-  
-  <div id="header" hidden>
-    <span><img src="../img/logo_v2.png" style="height: 80px;"></span>
-  </div>
+
+    <div id="header" hidden>
+        <span><img src="../img/logo_v2.png" style="height: 80px;"></span>
+    </div>
     <div class="container" style="height:100%">
         <div id="map" style="height:100%;background: #090909;"></div>
     </div>
     <div id="logoContainer"><img src="../../img/logo_v2.png" style="width:100%"></div>
-   
-   
-</body>     
+
+
+</body>
 <script language="javascript">
-     var map = L.map('map').setView([51.028, 10.334], 5);
-     var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+    var cartdb_dark = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-     });
-     
-     layer.addTo(map);
+    });
+    var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    var OpenStreetMap_DE = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    });
+    googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
+    googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
 
-     var mapControlsContainer = document.getElementsByClassName("leaflet-control")[0];
- var logoContainer = document.getElementById("logoContainer");
-   mapControlsContainer.appendChild(logoContainer);
-
-   dragElement(document.getElementById("logoContainer"));
-
-function dragElement(elmnt) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  if (document.getElementById("logoContainer")) {
-    // if present, the header is where you move the DIV from:
-    document.getElementById("logoContainer").onmousedown = dragMouseDown;
-  } else {
-    // otherwise, move the DIV from anywhere inside the DIV:
-    elmnt.onmousedown = dragMouseDown;
-  }
-
-  function dragMouseDown(e) {
-    e = e || window.event;
-    e.preventDefault();
-    map.dragging.disable();
-    // get the mouse cursor position at startup:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
-  }
-
-  function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
+    var baseMaps = {
+        "CartoDB Dark Matter": cartdb_dark,
+        "OpenStreetMap": osm,
+        "OpenStreetMap DE": OpenStreetMap_DE,
+        "OpenTopoMap": OpenTopoMap,
+        "Google Hybrid": googleHybrid,
+        "Google Satellite": googleSat
+    }
     
-    // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-  }
+    function dragElement(elmnt) {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        if (document.getElementById("logoContainer")) {
+            // if present, the header is where you move the DIV from:
+            document.getElementById("logoContainer").onmousedown = dragMouseDown;
+        } else {
+            // otherwise, move the DIV from anywhere inside the DIV:
+            elmnt.onmousedown = dragMouseDown;
+        }
 
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup = null;
-    document.onmousemove = null;
-    map.dragging.enable();
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            map.dragging.disable();
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            // calculate the new cursor position:
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            // set the element's new position:
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            // stop moving when mouse button is released:
+            document.onmouseup = null;
+            document.onmousemove = null;
+            map.dragging.enable();
+
+        }
+    }
+
+    var map = L.map('map', {
+        center: [51.028, 10.334],
+        zoom: 5,
+        layers: [cartdb_dark]
+    });
+
+    // Add Data
+    function addGeoJSONFlaechen(data, label) {
+        var geoJSONLayer = L.geoJSON(data, {
+            style: {
+                fillColor: '#02cba7',
+                weight: 1,
+                opacity: 0.7,
+                color: '#0b73e4',
+                fillOpacity: 0.4
+            },
+            //onEachFeature: function(feature, layer) {
+            //    layer.bindPopup("DN: " + feature.properties.DN);
+            //}
+        });
+        var lyrLbl = label + " Potenzial"
+        // Add the GeoJSON layer to the map
+        //geoJSONLayer.addTo(map);
+        layerControl.addOverlay(geoJSONLayer, lyrLbl)
+    }
+
+    const datasets = [
+        '../data/RLI/BB.geojson',
+        '../data/RLI/BE.geojson',
+        '../data/RLI/BW.geojson',
+        '../data/RLI/BY.geojson',
+        '../data/RLI/HB.geojson',
+        '../data/RLI/HE.geojson',
+        '../data/RLI/HH.geojson',
+        '../data/RLI/MV.geojson',
+        '../data/RLI/NI.geojson',
+        '../data/RLI/NW.geojson',
+        '../data/RLI/RP.geojson',
+        '../data/RLI/SH.geojson',
+        '../data/RLI/SL.geojson',
+        '../data/RLI/SN.geojson',
+        '../data/RLI/ST.geojson',
+        '../data/RLI/TH.geojson'
+    ];
+    for (var dataset in datasets) {
+        fetch(datasets[dataset])
+            .then(response => response.json())
+            .then(data => addGeoJSONFlaechen(data, datasets[dataset].slice(12,14)))
+            .catch(error => console.error('Error loading GeoJSON data:', error));
+    }
+
+    function addGeoJSONGrenzen(data) {
+        var grenzLayer = L.geoJSON(data, {
+            style: {
+                fillColor: '#02cba7',
+                weight: 2,
+                opacity: 0.6,
+                color: '#02cba7',
+                fillOpacity: 0
+            },
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.name + " (" + feature.properties.code + ")");
+            }
+        });
+        grenzLayer.addTo(map);
+        console.log('Grenzen added')
+    }
+    fetch('../data/grenzen.geojson')
+        .then(response => response.json())
+        .then(data => addGeoJSONGrenzen(data))
+        .catch(error => console.error('Error loading Landesgrenzen GeoJSON data:', error));
+
+    // Additional attributions
+    credits = [
+        '&copy Land NRW (2020)',
+        '&copy Bundesland Schleswig-Holstein',
+        '&copy Land Niedersachsen'
+    ]
+
     
-  }
-}
-</script>                                                                                                                     
+    L.control.locate().addTo(map);
+    L.control.scale().addTo(map);
+
+    var layerControl = L.control.layers(baseMaps).addTo(map);
+
+    var mapControlsContainer = document.getElementsByClassName("leaflet-control")[0];
+    var logoContainer = document.getElementById("logoContainer");
+    mapControlsContainer.appendChild(logoContainer);
+    dragElement(document.getElementById("logoContainer"));
+</script>
+
 </html>
