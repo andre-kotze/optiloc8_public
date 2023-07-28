@@ -12,6 +12,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+    <script src="../js/lvector.js"></script>
+    <link rel="stylesheet" href="https://rawgithub.com/ebrelsford/Leaflet.loading/master/src/Control.Loading.css">
+    <script src="https://rawgithub.com/ebrelsford/Leaflet.loading/master/src/Control.Loading.js"></script>
 </head>
 
 <body>
@@ -107,12 +110,13 @@
     var map = L.map('map', {
         center: [51.028, 10.334],
         zoom: 5,
+        loadingControl: true,
         layers: [cartdb_dark]
     });
 
     // Add Data
     async function addGeoJSONFlaechen(data, n) {
-        console.log("adding "+ data.slice(12,14))
+        //console.log("adding "+ data.slice(12,14))
         var response = await fetch(data)
         var GeoJson = await response.json()
         //var lyrLbl = label + " Potenzial"
@@ -152,13 +156,13 @@
     ];
     async function loadPotenzialflaechen(urls) {
         for (var dataset in datasets) {
-            console.log("start loading "+dataset)
+            //console.log("start loading "+dataset)
             var flaechenLyr = await addGeoJSONFlaechen(datasets[dataset],dataset)
             
             // Add the GeoJSON layer to the map
             //geoJSONLayer.addTo(map);
             layerControl.addOverlay(flaechenLyr, datasets[dataset].slice(12,14) + " Potenzial")
-            console.log("finished fetch "+dataset)
+            //console.log("finished fetch "+dataset)
             //    .catch(error => console.error('Error loading GeoJSON data:', error));
         }
     }
@@ -179,7 +183,6 @@
             }
         });
         grenzLayer.addTo(map);
-        console.log('Grenzen added')
     }
     fetch('../data/grenzen.geojson')
         .then(response => response.json())
@@ -203,6 +206,30 @@
     var logoContainer = document.getElementById("logoContainer");
     mapControlsContainer.appendChild(logoContainer);
     dragElement(document.getElementById("logoContainer"));
+
+    wea_DE = new lvector.AGS({
+        //url: "https://services2.arcgis.com/jUpNdisbWqRpMo35/arcgis/rest/services",
+        url:"https://services2.arcgis.com/jUpNdisbWqRpMo35/ArcGIS/rest/services/Windkraftanlagen_DE/FeatureServer/0",
+        fields: "Name,Baujahr,Anzahl,Gesamtleistung__MW_,Typ__WKA_",
+        scaleRange: [13, 20],
+        //showAll: true,
+        //symbology: {
+        //    type: "single",
+        //    vectorOptions: {
+        //        weight: 4,
+        //        opacity: 0.8,
+        //        color: "#004a00"
+        //    }    
+        //},
+        popupTemplate: '<div class="iw-content"><table class="condensed-table">'+
+            '<tr><strong>{Name}</strong></tr>'+
+            '<tr><td>Gesamtleistung (MW):</td><td>{Gesamtleistung__MW_}</td></tr>'+
+            '<tr><td>Baujahr:</td><td>{Baujahr}</td></tr>'+
+            '<tr><td>Anzahl:</td><td>{Anzahl}</td></tr>'+
+            '<tr><td>Typ (WKA):</td><td>{Typ__WKA_}</td></tr>'+
+            '</table></div>'
+    });
+    wea_DE.setMap(map)
 </script>
 
 </html>
